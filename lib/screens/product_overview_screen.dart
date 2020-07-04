@@ -10,7 +10,7 @@ import '../providers/cart.dart';
 import '../providers/products_provider.dart';
 
 enum FilterOption {
-  Favoutes,
+  Favourites,
   All,
 }
 
@@ -59,7 +59,7 @@ class _ProductOverviewScreenState extends State<ProductOverviewScreen> {
             icon: Icon(Icons.more_vert),
             onSelected: (FilterOption selectedValue) {
               setState(() {
-                if (selectedValue == FilterOption.Favoutes) {
+                if (selectedValue == FilterOption.Favourites) {
                   _showOnlyFavourites = true;
                 } else {
                   _showOnlyFavourites = false;
@@ -69,7 +69,7 @@ class _ProductOverviewScreenState extends State<ProductOverviewScreen> {
             itemBuilder: (_) => [
               PopupMenuItem(
                 child: Text("Show Favourites"),
-                value: FilterOption.Favoutes,
+                value: FilterOption.Favourites,
               ),
               PopupMenuItem(
                 child: Text("Show All"),

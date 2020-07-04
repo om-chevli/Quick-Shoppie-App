@@ -6,48 +6,74 @@ import '../widgets/app_drawer.dart';
 import '../widgets/order_item.dart';
 import '../providers/order.dart' show Orders;
 
-class OrdersScreen extends StatelessWidget {
+class OrdersScreen extends StatefulWidget {
   static const routeName = '/orders';
+
+  @override
+  _OrdersScreenState createState() => _OrdersScreenState();
+}
+
+class _OrdersScreenState extends State<OrdersScreen> {
+  var _isLoading = false;
+  @override
+  void initState() {
+    setState(() {
+      _isLoading = true;
+    });
+    Provider.of<Orders>(context, listen: false).fetchAndSetOrders().then((_) {
+      setState(() {
+        _isLoading = false;
+      });
+    });
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     final orderData = Provider.of<Orders>(context);
     return Scaffold(
       appBar: CustomBar(appTitle: "Your Orders"),
-      body: orderData.orders.isEmpty
+      body: _isLoading
           ? Center(
-              child: Text(
-                "No Orders yet!",
-                style: TextStyle(
-                  fontFamily: "Lato",
-                  fontWeight: FontWeight.bold,
-                  fontSize: 30,
-                ),
+              child: CircularProgressIndicator(
+                backgroundColor: Theme.of(context).primaryColor,
               ),
             )
-          : Column(
-              children: <Widget>[
-                Container(
+          : orderData.orders.isEmpty
+              ? Center(
                   child: Text(
-                    "Receipts",
+                    "No Orders yet!",
                     style: TextStyle(
                       fontFamily: "Lato",
                       fontWeight: FontWeight.bold,
                       fontSize: 30,
                     ),
                   ),
-                  padding: EdgeInsets.symmetric(vertical: 10),
+                )
+              : Column(
+                  children: <Widget>[
+                    Container(
+                      child: Text(
+                        "Receipts",
+                        style: TextStyle(
+                          fontFamily: "Lato",
+                          fontWeight: FontWeight.bold,
+                          fontSize: 30,
+                        ),
+                      ),
+                      padding: EdgeInsets.symmetric(vertical: 10),
+                    ),
+                    // SizedBox(
+                    //   height: 5,
+                    // ),
+                    Expanded(
+                      child: ListView.builder(
+                        itemCount: orderData.orders.length,
+                        itemBuilder: (ctx, i) => OrderItem(orderData.orders[i]),
+                      ),
+                    ),
+                  ],
                 ),
-                // SizedBox(
-                //   height: 5,
-                // ),
-                Expanded(
-                  child: ListView.builder(
-                    itemCount: orderData.orders.length,
-                    itemBuilder: (ctx, i) => OrderItem(orderData.orders[i]),
-                  ),
-                ),
-              ],
-            ),
       drawer: AppDrawer(),
     );
   }

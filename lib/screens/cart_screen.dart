@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import './orders_screen.dart';
 import '../widgets/custom_bar.dart';
 import '../widgets/cart_item.dart';
 import '../widgets/app_drawer.dart';
@@ -76,35 +77,65 @@ class CartScreen extends StatelessWidget {
               ],
             ),
           ),
-          FlatButton(
-            padding: EdgeInsets.symmetric(
-              horizontal: 15,
-              vertical: 8,
-            ),
-            shape:
-                RoundedRectangleBorder(borderRadius: BorderRadius.circular(5)),
-            child: Text(
-              "Checkout Now!",
-              style: TextStyle(
-                fontSize: 25,
-                fontWeight: FontWeight.bold,
-                color: Colors.white,
-              ),
-            ),
-            color: Color.fromRGBO(244, 0, 0, 1),
-            onPressed: () {
-              Provider.of<Orders>(context, listen: false).addOrder(
-                cart.items.values.toList(),
-                cart.cartTotal,
-              );
-              cart.clear();
-            },
-          ),
+          CheckoutButton(cart: cart),
           SizedBox(
             height: 15,
           ),
         ],
       ),
+    );
+  }
+}
+
+class CheckoutButton extends StatefulWidget {
+  const CheckoutButton({
+    Key key,
+    @required this.cart,
+  }) : super(key: key);
+
+  final Cart cart;
+
+  @override
+  _CheckoutButtonState createState() => _CheckoutButtonState();
+}
+
+class _CheckoutButtonState extends State<CheckoutButton> {
+  var _isLoading = false;
+  @override
+  Widget build(BuildContext context) {
+    return FlatButton(
+      padding: EdgeInsets.symmetric(
+        horizontal: 15,
+        vertical: 8,
+      ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5)),
+      child: _isLoading
+          ? CircularProgressIndicator()
+          : Text(
+              "Checkout Now!",
+              style: TextStyle(
+                fontSize: 25,
+                fontWeight: FontWeight.bold,
+                color: !_isLoading ? null : Colors.white,
+              ),
+            ),
+      color: Color.fromRGBO(244, 0, 0, 1),
+      onPressed: (widget.cart.cartTotal <= 0)
+          ? null
+          : () async {
+              setState(() {
+                _isLoading = true;
+              });
+              await Provider.of<Orders>(context, listen: false).addOrder(
+                widget.cart.items.values.toList(),
+                widget.cart.cartTotal,
+              );
+              setState(() {
+                _isLoading = false;
+              });
+              widget.cart.clear();
+              Navigator.pushNamed(context, OrdersScreen.routeName);
+            },
     );
   }
 }
