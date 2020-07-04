@@ -21,20 +21,6 @@ class ProductOverviewScreen extends StatefulWidget {
 
 class _ProductOverviewScreenState extends State<ProductOverviewScreen> {
   var _showOnlyFavourites = false;
-  var _isLoading = false;
-
-  @override
-  void initState() {
-    _isLoading = true;
-    Provider.of<ProductsProvider>(context, listen: false)
-        .fetchAndSetProducts()
-        .then((_) {
-      setState(() {
-        _isLoading = false;
-      });
-    });
-    super.initState();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -79,14 +65,23 @@ class _ProductOverviewScreenState extends State<ProductOverviewScreen> {
         appTitle: "Quick Shoppie",
       ),
       drawer: AppDrawer(),
-      body: _isLoading
-          ? Center(
-              child: CircularProgressIndicator(
-                backgroundColor: Theme.of(context).primaryColor,
-                semanticsLabel: "Just A Second!",
-              ),
-            )
-          : ProductsGrid(_showOnlyFavourites),
+      body: FutureBuilder(
+          future: Provider.of<ProductsProvider>(context, listen: false)
+              .fetchAndSetProducts(),
+          builder: (ctx, dataSnapshot) {
+            if (dataSnapshot.connectionState == ConnectionState.waiting) {
+              return Center(
+                child: CircularProgressIndicator(
+                  backgroundColor: Theme.of(context).primaryColor,
+                  semanticsLabel: "Just A Second!",
+                ),
+              );
+            } else if (dataSnapshot.error != null) {
+              //Error Handling here
+            } else {
+              return ProductsGrid(_showOnlyFavourites);
+            }
+          }),
     );
   }
 }
