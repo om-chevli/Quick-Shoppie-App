@@ -78,6 +78,7 @@ class _ProductOverviewScreenState extends State<ProductOverviewScreen> {
               );
             } else if (dataSnapshot.error != null) {
               //Error Handling here
+              return Center(child: Text("An Error Occured!"));
             } else {
               return ProductsGrid(_showOnlyFavourites);
             }

@@ -55,7 +55,7 @@ class ProductsProvider with ChangeNotifier {
     try {
       final response = await http.get(url);
       final extractedData = json.decode(response.body) as Map<String, dynamic>;
-      if(extractedData==null){
+      if (extractedData == null) {
         return;
       }
       final List<Product> loadedProducts = [];
@@ -86,6 +86,7 @@ class ProductsProvider with ChangeNotifier {
           "description": product.description,
           "price": product.price,
           "imageUrl": product.imageUrl,
+          "isFavourite": product.isFavourite,
         }),
       );
       final newProduct = Product(
@@ -94,6 +95,7 @@ class ProductsProvider with ChangeNotifier {
         imageUrl: product.imageUrl,
         title: product.title,
         price: product.price,
+        isFavourite: product.isFavourite,
       );
       _items.add(newProduct);
       notifyListeners();
