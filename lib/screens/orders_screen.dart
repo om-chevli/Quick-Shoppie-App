@@ -6,73 +6,72 @@ import '../widgets/app_drawer.dart';
 import '../widgets/order_item.dart';
 import '../providers/order.dart' show Orders;
 
-class OrdersScreen extends StatefulWidget {
+class OrdersScreen extends StatelessWidget {
   static const routeName = '/orders';
 
   @override
-  _OrdersScreenState createState() => _OrdersScreenState();
-}
-
-class _OrdersScreenState extends State<OrdersScreen> {
-  var _isLoading = false;
-  @override
-  void initState() {
-      _isLoading = true;
-    Provider.of<Orders>(context, listen: false).fetchAndSetOrders().then((_) {
-      setState(() {
-        _isLoading = false;
-      });
-    });
-    super.initState();
-  }
-
-  @override
   Widget build(BuildContext context) {
-    final orderData = Provider.of<Orders>(context);
+    //final orderData = Provider.of<Orders>(context);
     return Scaffold(
       appBar: CustomBar(appTitle: "Your Orders"),
-      body: _isLoading
-          ? Center(
+      drawer: AppDrawer(),
+      body: FutureBuilder(
+        future: Provider.of<Orders>(context, listen: false).fetchAndSetOrders(),
+        builder: (ctx, dataSnapShot) {
+          if (dataSnapShot.connectionState == ConnectionState.waiting) {
+            return Center(
               child: CircularProgressIndicator(
                 backgroundColor: Theme.of(context).primaryColor,
               ),
-            )
-          : orderData.orders.isEmpty
-              ? Center(
-                  child: Text(
-                    "No Orders yet!",
-                    style: TextStyle(
-                      fontFamily: "Lato",
-                      fontWeight: FontWeight.bold,
-                      fontSize: 30,
+            );
+          } else if (dataSnapShot.error != null) {
+            //Error Handling Here
+            return Center(
+              child: Text("An Error Occured"),
+            );
+          } else {
+            return Consumer<Orders>(
+              builder: (ctx, orderData, child) {
+                if (orderData.orders.isEmpty) {
+                  return Center(
+                    child: Text(
+                      "No Orders yet!",
+                      style: TextStyle(
+                        fontFamily: "Lato",
+                        fontWeight: FontWeight.bold,
+                        fontSize: 30,
+                      ),
                     ),
+                  );
+                } else {
+                  return ListView.builder(
+                    itemCount: orderData.orders.length,
+                    itemBuilder: (ctx, i) => OrderItem(orderData.orders[i]),
+                  );
+                }
+              },
+              child: Column(
+                children: <Widget>[
+                  Container(
+                    child: Text(
+                      "Receipts",
+                      style: TextStyle(
+                        fontFamily: "Lato",
+                        fontWeight: FontWeight.bold,
+                        fontSize: 30,
+                      ),
+                    ),
+                    padding: EdgeInsets.symmetric(vertical: 10),
                   ),
-                )
-              : Column(
-                  children: <Widget>[
-                    Container(
-                      child: Text(
-                        "Receipts",
-                        style: TextStyle(
-                          fontFamily: "Lato",
-                          fontWeight: FontWeight.bold,
-                          fontSize: 30,
-                        ),
-                      ),
-                      padding: EdgeInsets.symmetric(vertical: 10),
-                    ),
-                    // SizedBox(
-                    //   height: 5,
-                    // ),
-                    Expanded(
-                      child: ListView.builder(
-                        itemCount: orderData.orders.length,
-                        itemBuilder: (ctx, i) => OrderItem(orderData.orders[i]),
-                      ),
-                    ),
-                  ],
-                ),
-      drawer: AppDrawer(),
+                  // SizedBox(
+                  //   height: 5,
+                  // ),
+                ],
+              ),
+            );
+          }
+        },
+      ),
     );
   }
 }
