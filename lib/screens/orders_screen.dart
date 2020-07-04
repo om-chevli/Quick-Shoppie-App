@@ -17,9 +17,7 @@ class _OrdersScreenState extends State<OrdersScreen> {
   var _isLoading = false;
   @override
   void initState() {
-    setState(() {
       _isLoading = true;
-    });
     Provider.of<Orders>(context, listen: false).fetchAndSetOrders().then((_) {
       setState(() {
         _isLoading = false;
