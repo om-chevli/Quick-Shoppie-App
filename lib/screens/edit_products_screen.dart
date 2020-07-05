@@ -79,7 +79,6 @@ class _EditProductsScreenState extends State<EditProductsScreen> {
               !_imageUrlController.text.endsWith(".jpeg"))) {
         return;
       }
-      setState(() {});
     }
   }
 

@@ -6,21 +6,11 @@ import '../models/product.dart';
 import '../providers/cart.dart';
 
 class ProductItem extends StatelessWidget {
-  // final String imageUrl;
-  // final String title;
-  // final String id;
-
-  // ProductItem({
-  //   this.id,
-  //   this.imageUrl,
-  //   this.title,
-  // });
 
   @override
   Widget build(BuildContext context) {
     final product = Provider.of<Product>(context, listen: false);
     final cart = Provider.of<Cart>(context, listen: false);
-    final scaffold = Scaffold.of(context);
     return DecoratedBox(
       decoration: BoxDecoration(
         boxShadow: [
