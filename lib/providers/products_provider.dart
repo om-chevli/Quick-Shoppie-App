@@ -7,40 +7,10 @@ import '../models/product.dart';
 import '../models/http_exception.dart';
 
 class ProductsProvider with ChangeNotifier {
-  List<Product> _items = [
-    // Product(
-    //   id: 'p1',
-    //   title: 'Denim Jacket',
-    //   description: 'Long Sleeves Denim Jackets For Men!',
-    //   price: 2000,
-    //   imageUrl:
-    //       'https://img5.cfcdn.club/69/7b/69d70d66e76538279e325633e94cb37b.jpg',
-    // ),
-    // Product(
-    //   id: 'p2',
-    //   title: "Men's T-Shirt",
-    //   description: 'Stylesmyth Half Sleeves Cotton T-shirt',
-    //   price: 500,
-    //   imageUrl:
-    //       'https://img5.cfcdn.club/f2/6c/f2bbf75562e0db5a549382732fd1076c.jpg',
-    // ),
-    // Product(
-    //   id: 'p3',
-    //   title: "Girl's Top",
-    //   description: "Raabta's White Cold Shoulder Top With Black Knotes",
-    //   price: 500,
-    //   imageUrl:
-    //       'https://img5.cfcdn.club/90/34/909caa34990bd4a150c7a5a35dd3eb34.jpg',
-    // ),
-    // Product(
-    //   id: 'p4',
-    //   title: 'Cotton Jacket',
-    //   description: 'Fashion Trap Women Cotton Jacket for Women and Girls',
-    //   price: 1500,
-    //   imageUrl:
-    //       'https://img5.cfcdn.club/cd/97/cd3471a00d6b54b89a66bcea3c94c197.jpg',
-    // ),
-  ];
+  List<Product> _items = [];
+  final String authToken;
+
+  ProductsProvider(this.authToken, this._items);
 
   List<Product> get items {
     return [..._items];
@@ -51,7 +21,7 @@ class ProductsProvider with ChangeNotifier {
   }
 
   Future<void> fetchAndSetProducts() async {
-    const url = "https://lets-start-flutter.firebaseio.com/products.json";
+    final url = "https://lets-start-flutter.firebaseio.com/products.json?auth=$authToken";
     try {
       final response = await http.get(url);
       final extractedData = json.decode(response.body) as Map<String, dynamic>;
