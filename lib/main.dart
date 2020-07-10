@@ -13,6 +13,7 @@ import './screens/cart_screen.dart';
 import './screens/user_products_screen.dart';
 import './screens/edit_products_screen.dart';
 import './screens/auth_screen.dart';
+import './screens/splash_screen.dart';
 
 void main() => runApp(MyApp());
 
@@ -53,7 +54,15 @@ class MyApp extends StatelessWidget {
             canvasColor: Color.fromRGBO(197, 205, 225, 1),
             fontFamily: "Lato",
           ),
-          home: auth.isAuth ? ProductOverviewScreen() : AuthScreen(),
+          home: auth.isAuth
+              ? ProductOverviewScreen()
+              : FutureBuilder(
+                  future: auth.tryAutoLogin(),
+                  builder: (ctx, dataSnapshot) =>
+                      dataSnapshot.connectionState == ConnectionState.waiting
+                          ? SplashScreen()
+                          : AuthScreen(),
+                ),
           routes: {
             ProductDetailsScreen.routeName: (ctx) => ProductDetailsScreen(),
             CartScreen.routeName: (ctx) => CartScreen(),
