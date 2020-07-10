@@ -1,6 +1,6 @@
 import 'package:flutter/foundation.dart';
 
-class CartItem with ChangeNotifier {
+class CartItem {
   final String title;
   final double price;
   final String id;
@@ -37,14 +37,19 @@ class Cart with ChangeNotifier {
   }
 
   double get cartTotal {
-    double total = 0.0;
+    var total = 0.0;
     _items.forEach((key, cartItem) {
       total += cartItem.price * cartItem.quantity;
     });
     return total;
   }
 
-  void addItems(String productId, String title, double price, String url) {
+  void addItems(
+    String productId,
+    String title,
+    double price,
+    String url,
+  ) {
     if (_items.containsKey(productId)) {
       //change quatity
       _items.update(

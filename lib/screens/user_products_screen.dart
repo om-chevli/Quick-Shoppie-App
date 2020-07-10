@@ -8,7 +8,7 @@ import '../providers/products_provider.dart';
 import './edit_products_screen.dart';
 
 Future<void> _refreshProducts(BuildContext context) async {
-  await Provider.of<ProductsProvider>(context).fetchAndSetProducts();
+  await Provider.of<ProductsProvider>(context, listen: false).fetchAndSetProducts(true);
 }
 
 class UserProductsScreen extends StatelessWidget {

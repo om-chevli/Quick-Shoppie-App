@@ -30,12 +30,47 @@ class Orders with ChangeNotifier {
     return [..._orders];
   }
 
+  Future<void> fetchAndSetOrders() async {
+    final url =
+        'https://lets-start-flutter.firebaseio.com/orders.json?auth=$authToken';
+    final response = await http.get(url);
+    final List<OrderItem> _loadedOrders = [];
+    final extractedData = json.decode(response.body) as Map<String, dynamic>;
+    if (extractedData == null) {
+      return;
+    }
+    extractedData.forEach((orderId, orderData) {
+      _loadedOrders.add(
+        OrderItem(
+          amount: orderData["amount"],
+          id: orderId,
+          dateTime: DateTime.parse(orderData["dateTime"]),
+          products: (orderData["products"] as List<dynamic>)
+              .map(
+                (item) => CartItem(
+                  id: item["id"],
+                  quantity: item["quantity"],
+                  title: item["title"],
+                  price: item["price"],
+                  imageUrl: null,
+                ),
+              )
+              .toList(),
+        ),
+      );
+    });
+    _orders = _loadedOrders.reversed.toList();
+    notifyListeners();
+  }
+
   Future<void> addOrder(List<CartItem> cartProd, double total) async {
-    final url = "https://lets-start-flutter.firebaseio.com/orders.json?auth=$authToken";
+    final url =
+        'https://lets-start-flutter.firebaseio.com/orders.json?auth=$authToken';
+    final timestamp = DateTime.now();
     final response = await http.post(url,
         body: json.encode({
           "amount": total,
-          "dateTime": DateTime.now().toIso8601String(),
+          "dateTime": timestamp.toIso8601String(),
           "products": cartProd
               .map((cp) => {
                     "id": cp.id,
@@ -49,42 +84,11 @@ class Orders with ChangeNotifier {
       0,
       OrderItem(
         amount: total,
-        dateTime: DateTime.now(),
+        dateTime: timestamp,
         id: json.decode(response.body)["name"],
         products: cartProd,
       ),
     );
-    notifyListeners();
-  }
-
-  Future<void> fetchAndSetOrders() async {
-    final url = "https://lets-start-flutter.firebaseio.com/orders.json?auth=$authToken";
-    final response = await http.get(url);
-    final extractedData = json.decode(response.body) as Map<String, dynamic>;
-    if (extractedData == null) {
-      return;
-    }
-    final List<OrderItem> _loadedOrders = [];
-    extractedData.forEach((orderId, orderData) {
-      _loadedOrders.add(
-        OrderItem(
-          amount: orderData["amount"],
-          id: orderId,
-          dateTime: DateTime.parse(orderData["dateTime"]),
-          products: (orderData["products"] as List<dynamic>)
-              .map(
-                (item) => CartItem(
-                    id: item["id"],
-                    quantity: item["quantity"],
-                    title: item["title"],
-                    price: item["price"],
-                    imageUrl: null),
-              )
-              .toList(),
-        ),
-      );
-    });
-    _orders = _loadedOrders.reversed.toList();
     notifyListeners();
   }
 }

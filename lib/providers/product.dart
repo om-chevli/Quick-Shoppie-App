@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 
 class Product with ChangeNotifier {
@@ -32,7 +32,7 @@ class Product with ChangeNotifier {
     notifyListeners();
 
     final url =
-        "https://lets-start-flutter.firebaseio.com/userFavourites/$userId/$id.json?auth=$authToken";
+        'https://lets-start-flutter.firebaseio.com/userFavourites/$userId/$id.json?auth=$authToken';
 
     try {
       final response = await http.put(

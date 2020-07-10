@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../screens/product_details_screen.dart';
-import '../models/product.dart';
+import '../providers/product.dart';
 import '../providers/cart.dart';
 import '../providers/auth.dart';
 
@@ -11,9 +11,7 @@ class ProductItem extends StatelessWidget {
   Widget build(BuildContext context) {
     final product = Provider.of<Product>(context, listen: false);
     final cart = Provider.of<Cart>(context, listen: false);
-    final authData = Provider.of<Auth>(
-      context,
-    );
+    final authData = Provider.of<Auth>(context, listen: false);
     return DecoratedBox(
       decoration: BoxDecoration(
         boxShadow: [
@@ -44,14 +42,14 @@ class ProductItem extends StatelessWidget {
             leading: Consumer<Product>(
               builder: (context, product, _) => IconButton(
                 icon: Icon(
-                  product.isFavourite
-                      ? Icons.favorite
-                      : Icons.favorite_border,
+                  product.isFavourite ? Icons.favorite : Icons.favorite_border,
                 ),
                 color: Colors.red,
                 onPressed: () {
                   product.toggleFavouriteStatus(
-                      authData.token, authData.userId);
+                    authData.token,
+                    authData.userId,
+                  );
                 },
               ),
             ),

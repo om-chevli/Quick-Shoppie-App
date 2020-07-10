@@ -3,7 +3,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
-import '../models/product.dart';
+import './product.dart';
 import '../models/http_exception.dart';
 
 class ProductsProvider with ChangeNotifier {
@@ -21,9 +21,15 @@ class ProductsProvider with ChangeNotifier {
     return _items.where((prod) => prod.isFavourite).toList();
   }
 
-  Future<void> fetchAndSetProducts() async {
+  Product findById(String id) {
+    return _items.firstWhere((prod) => prod.id == id);
+  }
+
+  Future<void> fetchAndSetProducts([bool filterByUser = false]) async {
+    final filterString =
+        filterByUser ? 'orderBy="creatorId"&equalTo="$userId"' : '';
     var url =
-        "https://lets-start-flutter.firebaseio.com/products.json?auth=$authToken";
+        'https://lets-start-flutter.firebaseio.com/products.json?auth=$authToken&$filterString';
     try {
       final response = await http.get(url);
       final extractedData = json.decode(response.body) as Map<String, dynamic>;
@@ -31,7 +37,7 @@ class ProductsProvider with ChangeNotifier {
         return;
       }
       url =
-          "https://lets-start-flutter.firebaseio.com/userFavourites/$userId.json?auth=$authToken";
+          'https://lets-start-flutter.firebaseio.com/userFavourites/$userId.json?auth=$authToken';
       final favouriteResponse = await http.get(url);
       final favouriteData = json.decode(favouriteResponse.body);
       final List<Product> loadedProducts = [];
@@ -49,13 +55,13 @@ class ProductsProvider with ChangeNotifier {
       _items = loadedProducts;
       notifyListeners();
     } catch (error) {
-      throw error;
+      throw (error);
     }
   }
 
   Future<void> addProduct(Product product) async {
     final url =
-        "https://lets-start-flutter.firebaseio.com/products.json?auth=$authToken";
+        'https://lets-start-flutter.firebaseio.com/products.json?auth=$authToken';
     try {
       final response = await http.post(
         url,
@@ -85,7 +91,7 @@ class ProductsProvider with ChangeNotifier {
     final prodId = _items.indexWhere((prod) => prod.id == id);
     if (prodId >= 0) {
       final url =
-          "https://lets-start-flutter.firebaseio.com/products/$id.json?auth=$authToken";
+          'https://lets-start-flutter.firebaseio.com/products/$id.json?auth=$authToken';
       try {
         await http.patch(url,
             body: json.encode({
@@ -106,7 +112,7 @@ class ProductsProvider with ChangeNotifier {
 
   Future<void> deleteProduct(String id) async {
     final url =
-        "https://lets-start-flutter.firebaseio.com/products/$id.json?auth=$authToken";
+        'https://lets-start-flutter.firebaseio.com/products/$id.json?auth=$authToken';
     final existingProductIndex = _items.indexWhere((prod) => prod.id == id);
     var existingProduct = _items[existingProductIndex];
     _items.removeAt(existingProductIndex);
@@ -118,9 +124,5 @@ class ProductsProvider with ChangeNotifier {
       throw HttpException("Could'nt Delete Product!");
     }
     existingProduct = null;
-  }
-
-  Product findById(String id) {
-    return _items.firstWhere((prod) => prod.id == id);
   }
 }
