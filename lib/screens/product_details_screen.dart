@@ -18,58 +18,82 @@ class ProductDetailsScreen extends StatelessWidget {
       listen: false,
     ).findById(productId);
     return Scaffold(
-      appBar: CustomBar(
-        appTitle: loadedProduct.title,
-        implyLeading: true,
-        act: <Widget>[
-          Consumer<Cart>(
-            builder: (_, cart, ch) => Badge(
-              child: ch,
-              value: cart.quantCount.toString(),
-            ),
-            child: IconButton(
-              icon: Icon(Icons.shopping_cart),
-              onPressed: () {
-                Navigator.pushNamed(context, CartScreen.routeName);
-              },
-            ),
-          ),
-        ],
-      ),
-      body: Column(
-        children: <Widget>[
-          Container(
-            child: Hero(
-              tag: productId,
-              child: Image.network(
-                loadedProduct.imageUrl,
-                fit: BoxFit.cover,
-                height: double.maxFinite,
+      // appBar: CustomBar(
+      //   appTitle: loadedProduct.title,
+      //   implyLeading: true,
+      //   act: <Widget>[
+      //     Consumer<Cart>(
+      //       builder: (_, cart, ch) => Badge(
+      //         child: ch,
+      //         value: cart.quantCount.toString(),
+      //       ),
+      //       child: IconButton(
+      //         icon: Icon(Icons.shopping_cart),
+      //         onPressed: () {
+      //           Navigator.pushNamed(context, CartScreen.routeName);
+      //         },
+      //       ),
+      //     ),
+      //   ],
+      // ),
+      body: CustomScrollView(
+        slivers: <Widget>[
+          SliverAppBar(
+            expandedHeight: 450,
+            pinned: true,
+            flexibleSpace: FlexibleSpaceBar(
+              title: Text(
+                loadedProduct.title,
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontFamily: "Anton",
+                  color: Colors.deepOrange,
+                ),
+              ),
+              background: Container(
+                child: Hero(
+                  tag: productId,
+                  child: Image.network(
+                    loadedProduct.imageUrl,
+                    fit: BoxFit.cover,
+                    height: double.maxFinite,
+                  ),
+                ),
+                height: 450,
+                width: double.infinity,
               ),
             ),
-            height: 450,
-            width: double.infinity,
           ),
-          SizedBox(height: 10),
-          Text(
-            "Rs. ${loadedProduct.price.toString()}",
-            style: TextStyle(
-              color: Theme.of(context).accentColor,
-              fontSize: 30,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-          SizedBox(
-            height: 10,
-          ),
-          Container(
-            child: Text(
-              loadedProduct.description,
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                fontSize: 20,
-              ),
-              softWrap: true,
+          SliverList(
+            delegate: SliverChildListDelegate(
+              [
+                SizedBox(height: 10),
+                Text(
+                  "Rs. ${loadedProduct.price.toString()}",
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    color: Theme.of(context).primaryColor,
+                    fontSize: 30,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                SizedBox(
+                  height: 10,
+                ),
+                Container(
+                  child: Text(
+                    loadedProduct.description,
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontSize: 20,
+                    ),
+                    softWrap: true,
+                  ),
+                ),
+                SizedBox(
+                  height: 800,
+                )
+              ],
             ),
           ),
         ],

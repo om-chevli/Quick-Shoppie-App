@@ -22,7 +22,7 @@ class UserProductItem extends StatelessWidget {
       margin: EdgeInsets.symmetric(vertical: 8),
       decoration: BoxDecoration(
         border: Border.all(
-          color: UniqueColorGenerator.getColor().withAlpha(255),
+          color: UniqueColorGenerator.getColor().withOpacity(1),
           width: 5,
           style: BorderStyle.solid,
         ),
@@ -60,7 +60,7 @@ class UserProductItem extends StatelessWidget {
                     scaffold.showSnackBar(
                       SnackBar(
                         content: Text(
-                          "Deleting Failed!!!", 
+                          "Deleting Failed!!!",
                           textAlign: TextAlign.center,
                         ),
                       ),

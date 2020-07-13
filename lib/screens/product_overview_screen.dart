@@ -67,7 +67,7 @@ class _ProductOverviewScreenState extends State<ProductOverviewScreen> {
       drawer: AppDrawer(),
       body: FutureBuilder(
           future: Provider.of<ProductsProvider>(context, listen: false)
-              .fetchAndSetProducts(),
+              .fetchAndSetProducts(false),
           builder: (ctx, dataSnapshot) {
             if (dataSnapshot.connectionState == ConnectionState.waiting) {
               return Center(

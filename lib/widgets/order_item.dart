@@ -5,7 +5,6 @@ import 'dart:math';
 import '../providers/order.dart' as ord;
 import '../models/unique_color_generator.dart';
 
-
 class OrderItem extends StatefulWidget {
   final ord.OrderItem order;
 
@@ -19,44 +18,56 @@ class _OrderItemState extends State<OrderItem> {
   var _expanded = false;
   @override
   Widget build(BuildContext context) {
-    return Card(
-      margin: EdgeInsets.symmetric(
-        vertical: 10,
-        horizontal: 12,
+    return AnimatedContainer(
+      duration: Duration(
+        milliseconds: 300,
       ),
-      color: UniqueColorGenerator.getColor(),
-      child: Column(
-        children: <Widget>[
-          ListTile(
-            title: Text(
-              "₹${widget.order.amount}",
-              style: TextStyle(
-                fontSize: 22,
-                fontWeight: FontWeight.bold,
+      height:
+          _expanded ? min(widget.order.products.length * 20.0 + 110, 200) : 95,
+      child: Card(
+        margin: EdgeInsets.symmetric(
+          vertical: 10,
+          horizontal: 12,
+        ),
+        color: UniqueColorGenerator.getColor(),
+        child: Column(
+          children: <Widget>[
+            ListTile(
+              title: Text(
+                "₹${widget.order.amount}",
+                style: TextStyle(
+                  fontSize: 22,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              subtitle: Text(
+                "Date: ${DateFormat("dd/MM/yy").format(widget.order.dateTime)}",
+                style: TextStyle(
+                  fontSize: 17,
+                  fontStyle: FontStyle.italic,
+                  color: Colors.black,
+                ),
+              ),
+              trailing: IconButton(
+                icon: _expanded
+                    ? Icon(Icons.expand_less)
+                    : Icon(Icons.expand_more),
+                onPressed: () {
+                  setState(() {
+                    _expanded = !_expanded;
+                  });
+                },
               ),
             ),
-            subtitle: Text(
-              "Date: ${DateFormat("dd/MM/yy").format(widget.order.dateTime)}",
-              style: TextStyle(
-                fontSize: 17,
-                fontStyle: FontStyle.italic,
-                color: Colors.black,
+            AnimatedContainer(
+              duration: Duration(
+                milliseconds: 300,
               ),
-            ),
-            trailing: IconButton(
-              icon:
-                  _expanded ? Icon(Icons.expand_less) : Icon(Icons.expand_more),
-              onPressed: () {
-                setState(() {
-                  _expanded = !_expanded;
-                });
-              },
-            ),
-          ),
-          if (_expanded)
-            Container(
+              // curve: Curves.easeOut,
               padding: EdgeInsets.all(5),
-              height: min(widget.order.products.length * 20.0 + 10, 120),
+              height: _expanded
+                  ? min(widget.order.products.length * 20.0 + 10, 100)
+                  : 0,
               child: ListView(
                 children: widget.order.products
                     .map(
@@ -83,7 +94,8 @@ class _OrderItemState extends State<OrderItem> {
                     .toList(),
               ),
             ),
-        ],
+          ],
+        ),
       ),
     );
   }
